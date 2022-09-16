@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fieldReference"]
 }
 
 datasource db {
@@ -64,13 +65,13 @@ model TeachersDisciplines {
 }
 
 model Tests {
-  id                   Int                 @id @default(autoincrement())
-  name                 String
-  pdfUrl               String
-  category             Categories          @relation(fields: [categoryId], references: [id])
-  teacherDiscipline    TeachersDisciplines @relation(fields: [teachersDisciplineId], references: [id])
-  categoryId           Int
-  teachersDisciplineId Int
+  id                  Int                 @id @default(autoincrement())
+  name                String
+  pdfUrl              String
+  category            Categories          @relation(fields: [categoryId], references: [id])
+  teacherDiscipline   TeachersDisciplines @relation(fields: [teacherDisciplineId], references: [id])
+  categoryId          Int
+  teacherDisciplineId Int
 
   @@map("tests")
 }
