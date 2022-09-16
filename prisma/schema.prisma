@@ -12,8 +12,65 @@ datasource db {
 
 model Users {
   id       Int    @id @default(autoincrement())
-  email    String
+  email    String @unique
   password String
 
   @@map("users")
+}
+
+model Categories {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  tests Tests[]
+
+  @@map("categories")
+}
+
+model Terms {
+  id          Int           @id @default(autoincrement())
+  number      Int           @unique
+  disciplines Disciplines[]
+
+  @@map("terms")
+}
+
+model Disciplines {
+  id                  Int                   @id @default(autoincrement())
+  name                String                @unique
+  term                Terms                 @relation(fields: [termId], references: [id])
+  termId              Int
+  teachersDisciplines TeachersDisciplines[]
+
+  @@map("disciplines")
+}
+
+model Teachers {
+  id                  Int                   @id @default(autoincrement())
+  name                String                @unique
+  teachersDisciplines TeachersDisciplines[]
+
+  @@map("teachers")
+}
+
+model TeachersDisciplines {
+  id           Int         @id @default(autoincrement())
+  teacher      Teachers    @relation(fields: [teacherId], references: [id])
+  discipline   Disciplines @relation(fields: [disciplineId], references: [id])
+  teacherId    Int
+  disciplineId Int
+  tests        Tests[]
+
+  @@map("teachersDisciplines")
+}
+
+model Tests {
+  id                   Int                 @id @default(autoincrement())
+  name                 String
+  pdfUrl               String
+  category             Categories          @relation(fields: [categoryId], references: [id])
+  teacherDiscipline    TeachersDisciplines @relation(fields: [teachersDisciplineId], references: [id])
+  categoryId           Int
+  teachersDisciplineId Int
+
+  @@map("tests")
 }
