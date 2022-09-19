@@ -20,6 +20,10 @@ export async function insert(testData: TestInsertData): Promise<Test> {
   return await testRepository.insert(testData);
 }
 
+export async function getAllByTerms() {
+  return await testRepository.findAllTestsByTerms();
+}
+
 async function getCategoryById(id: number): Promise<Category> {
   return await categoryRepository.findById(id);
 }

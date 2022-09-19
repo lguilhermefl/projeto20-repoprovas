@@ -9,7 +9,7 @@ export default function errorHandlerMiddleware(
   if (err.type) {
     return res.status(errorTypeToStatusCode(err.type)).send(err.message);
   }
-  return res.sendStatus(500);
+  return res.send(err);
 }
 
 function errorTypeToStatusCode(errorType: string) {

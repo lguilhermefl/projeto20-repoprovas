@@ -6,7 +6,8 @@ import * as testController from "../controllers/testController";
 
 const testRouter = Router();
 
-testRouter.use(validateJWT());
+testRouter.get("/tests", testController.getAll);
+// testRouter.use(validateJWT());
 testRouter.post(
   "/tests",
   validateBodySchemaMiddleware(testSchema),

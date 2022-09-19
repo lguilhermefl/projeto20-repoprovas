@@ -8,3 +8,9 @@ export async function insert(req: Request, res: Response) {
 
   res.status(201).send(newTest);
 }
+
+export async function getAll(req: Request, res: Response) {
+  const tests = await testService.getAllByTerms();
+
+  res.status(200).send(tests);
+}

@@ -5,20 +5,30 @@ export async function insert(testData: TestInsertData): Promise<Test> {
   return await prisma.tests.create({ data: testData });
 }
 
-// export async function getTests() {
-//   await prisma.$queryRaw`
-//     select t.id, t.name as período
-//     array(
-//         select d.id, d.name as disciplina
-//         array(
-//             select c.id, c.name as tipo
-//             array(
-//                 select jsonb_build_object('idProva', tests.id, 'nomeProva', tests.name, 'idProfessor(a)', teachers.id, 'nomeProfessor(a)', teachers.name)
-//                 from tests
-//                 where tests.categoryId=c.id
-//             ) as provas
-//         ) as tipos
-//     ) as disciplinas
-//     from terms t
-//   `;
-// }
+export async function findAllTestsByTerms() {
+  return await prisma.$queryRaw`
+  select t.id, t.number as term, array(
+    select jsonb_build_object('id', d.id, 'disciplineName', d.name, 'categories',
+      (select json_agg(
+          jsonb_build_object(
+            'id', c.id, 'categoryName', c.name, 'tests', (
+              select coalesce(json_agg(
+                jsonb_build_object(
+                  'testId', ts.id, 'testName', ts.name, 'teacherId', tc.id, 'teacherName', tc.name
+                )
+              ), '[]') from tests ts 
+              join "teachersDisciplines" td 
+              on td.id=ts."teacherDisciplineId" 
+              join teachers tc 
+              on tc.id=td."teacherId" 
+              where ts."categoryId"=c.id and td."disciplineId"=d.id
+            )
+          ) 
+        ) from categories c
+      )
+     ) from disciplines d
+     where d."termId"=t.id
+  ) as disciplines
+  from terms t
+  `;
+}
