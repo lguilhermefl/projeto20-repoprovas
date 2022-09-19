@@ -49,3 +49,25 @@ describe("POST /tests", () => {
     await prisma.$disconnect();
   });
 });
+
+describe("GET /tests/byterms", () => {
+  beforeEach(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE users RESTART IDENTITY`;
+  });
+
+  it("should return status code 200 and body in array format with at least 1 test", async () => {
+    const newTest = generateValidNewTest();
+
+    await request(app).post("/tests").send(newTest);
+    const response = await request(app).get("/tests/byterms");
+    const testsSize = response.body.length;
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(testsSize).toBeGreaterThan(0);
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+});
