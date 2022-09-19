@@ -16,7 +16,7 @@ describe("POST /signup", () => {
     expect(response.status).toEqual(201);
   });
 
-  it("should return status code 409 when email already registered", async () => {
+  it("should return status code 409 and error message when email already registered", async () => {
     const newUser = generateNewUser();
 
     await request(app).post("/signup").send(newUser);
@@ -57,7 +57,7 @@ describe("POST /signin", () => {
     expect(userSignInResponse.status).toEqual(200);
   });
 
-  it("should return status code 404 when email is not registered", async () => {
+  it("should return status code 404 and error message when email is not registered", async () => {
     const newUser = generateNewUser();
     delete newUser.repeat_password;
 
@@ -67,7 +67,7 @@ describe("POST /signin", () => {
     expect(response.text).toEqual("User not found");
   });
 
-  it("should return status code 401 when email is registered but password is incorrect", async () => {
+  it("should return status code 401 and error message when email is registered but password is incorrect", async () => {
     const newUser = generateNewUser();
 
     await request(app).post("/signup").send(newUser);
@@ -80,7 +80,7 @@ describe("POST /signin", () => {
     expect(response.text).toEqual("Incorrect password");
   });
 
-  it("should return status code 422 when invalid body format", async () => {
+  it("should return status code 422 when invalid new user body format", async () => {
     const response = await request(app).post("/signin");
 
     expect(response.status).toEqual(422);
