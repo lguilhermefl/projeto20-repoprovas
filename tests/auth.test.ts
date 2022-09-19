@@ -45,7 +45,7 @@ describe("POST /signin", () => {
   it("should return status code 200 and token when sign in is successful", async () => {
     const newUser = generateNewUser();
 
-    const newUserResponse = await request(app).post("/signup").send(newUser);
+    await request(app).post("/signup").send(newUser);
 
     delete newUser.repeat_password;
 
@@ -55,6 +55,35 @@ describe("POST /signin", () => {
 
     expect(token).not.toBeNull();
     expect(userSignInResponse.status).toEqual(200);
+  });
+
+  it("should return status code 404 when email is not registered", async () => {
+    const newUser = generateNewUser();
+    delete newUser.repeat_password;
+
+    const response = await request(app).post("/signin").send(newUser);
+
+    expect(response.status).toEqual(404);
+    expect(response.text).toEqual("User not found");
+  });
+
+  it("should return status code 401 when email is registered but password is incorrect", async () => {
+    const newUser = generateNewUser();
+
+    await request(app).post("/signup").send(newUser);
+    delete newUser.repeat_password;
+    newUser.password = "incorrect password";
+
+    const response = await request(app).post("/signin").send(newUser);
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Incorrect password");
+  });
+
+  it("should return status code 422 when invalid body format", async () => {
+    const response = await request(app).post("/signin");
+
+    expect(response.status).toEqual(422);
   });
 
   afterAll(async () => {
