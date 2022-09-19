@@ -53,7 +53,7 @@ describe("POST /signin", () => {
 
     const token = userSignInResponse.body;
 
-    expect(token).not.toBeNull();
+    expect(token).not.toBeFalsy();
     expect(userSignInResponse.status).toEqual(200);
   });
 
