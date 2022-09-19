@@ -32,3 +32,26 @@ export async function findAllTestsByTerms(): Promise<any> {
   from terms t
   `;
 }
+
+export async function findAllTestsByTeachers(): Promise<any> {
+  return await prisma.$queryRaw`
+    select tc.id, tc.name as "teacherName", array(
+      select jsonb_build_object('id', c.id, 'categoryName', c.name, 'tests', (
+          select coalesce(
+            json_agg(
+              jsonb_build_object(
+                'testId', ts.id, 'testName', ts.name, 'disciplineId', d.id, 'disciplineName', d.name
+              )
+            ), '[]'
+          ) from tests ts 
+          join "teachersDisciplines" td 
+          on td.id=ts."teacherDisciplineId" 
+          join disciplines d 
+          on d.id=td."disciplineId" 
+          where ts."categoryId"=c.id and td."teacherId"=tc.id
+        )
+      ) from categories c
+    ) as categories
+    from teachers tc
+  `;
+}
