@@ -124,6 +124,35 @@ describe("GET /tests/byterms", () => {
     expect(testsSize).toBeGreaterThan(0);
   });
 
+  it("should return status code 401 and error message when trying to get tests without authorization headers", async () => {
+    const response = await request(app).get("/tests/byterms");
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Authorization header is required");
+  });
+
+  it("should return status code 401 and error message when trying to get tests with invalid Bearer authorization format", async () => {
+    const token = await getNewUserToken();
+
+    const response = await request(app)
+      .get("/tests/byterms")
+      .set("Authorization", token);
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Token is not in the right format");
+  });
+
+  it("should return status code 401 and error message when trying to get tests with invalid token in authorization headers", async () => {
+    const authorization = "Bearer invalid token";
+
+    const response = await request(app)
+      .get("/tests/byterms")
+      .set("Authorization", authorization);
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Token is not valid");
+  });
+
   afterAll(async () => {
     await prisma.$disconnect();
   });
