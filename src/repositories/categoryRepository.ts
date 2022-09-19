@@ -1,6 +1,5 @@
 import { prisma } from "../config/database";
-import { Category } from "../types/categoryTypes";
 
-export async function findById(id: number): Promise<Category> {
+export async function findById(id: number): Promise<any> {
   return await prisma.categories.findUnique({ where: { id } });
 }

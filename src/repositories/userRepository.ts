@@ -5,6 +5,6 @@ export async function insert(userData: UserInsertData) {
   await prisma.users.create({ data: userData });
 }
 
-export async function findByEmail(email: string): Promise<User> {
+export async function findByEmail(email: string): Promise<any> {
   return await prisma.users.findUnique({ where: { email } });
 }

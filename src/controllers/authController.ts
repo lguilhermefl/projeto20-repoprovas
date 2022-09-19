@@ -3,7 +3,7 @@ import { UserBodyData, UserInsertData } from "../types/userTypes";
 import * as authService from "../services/authService";
 
 export async function signUp(req: Request, res: Response) {
-  const newUser: UserBodyData = req.body;
+  const newUser = req.body;
   delete newUser.repeat_password;
 
   await authService.signUp(newUser);
