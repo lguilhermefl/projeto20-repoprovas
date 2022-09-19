@@ -13,5 +13,6 @@ testRouter.post(
   testController.insert
 );
 testRouter.get("/tests/byterms", testController.getAllByTerms);
+testRouter.get("/tests/byteachers", testController.getAllByTeachers);
 
 export default testRouter;

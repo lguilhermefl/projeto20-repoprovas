@@ -24,6 +24,10 @@ export async function getAllByTerms(): Promise<any> {
   return await testRepository.findAllTestsByTerms();
 }
 
+export async function getAllByTeachers(): Promise<any> {
+  return await testRepository.findAllTestsByTeachers();
+}
+
 async function getCategoryById(id: number): Promise<Category> {
   return await categoryRepository.findById(id);
 }
