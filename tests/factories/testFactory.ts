@@ -2,10 +2,8 @@ import { faker } from "@faker-js/faker";
 import app from "../../src/app";
 import request from "supertest";
 import generateNewUser from "./authFactory";
-import { UserBodyData, UserInsertData } from "../../src/types/userTypes";
-import { TestInsertData } from "../../src/types/testTypes";
 
-export function generateValidNewTest(): TestInsertData {
+export function generateValidNewTest(): any {
   return {
     name: faker.random.words(2),
     pdfUrl: faker.internet.url(),
@@ -14,20 +12,21 @@ export function generateValidNewTest(): TestInsertData {
   };
 }
 
-async function createNewUser(): Promise<UserInsertData> {
-  const newUser: UserBodyData = generateNewUser();
+async function createNewUser(): Promise<any> {
+  const newUser = generateNewUser();
+
   await request(app).post("/signup").send(newUser);
   delete newUser.repeat_password;
   return newUser;
 }
 
-export async function getNewUserToken(): Promise<string> {
-  const newUser: UserInsertData = await createNewUser();
+export async function getNewUserToken(): Promise<any> {
+  const newUser = await createNewUser();
   const response = await request(app).post("/signin").send(newUser);
   return response.body.token;
 }
 
-export async function getFormatedAuthorization(): Promise<string> {
+export async function getFormatedAuthorization(): Promise<any> {
   const token: string = await getNewUserToken();
   return `Bearer ${token}`;
 }

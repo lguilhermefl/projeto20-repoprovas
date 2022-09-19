@@ -1,7 +1,6 @@
 import { faker } from "@faker-js/faker";
-import { UserBodyData } from "../../src/types/userTypes";
 
-export default function generateNewUser(): UserBodyData {
+export default function generateNewUser(): any {
   const password = faker.internet.password();
 
   return {

@@ -10,6 +10,7 @@ import request from "supertest";
 describe("POST /tests", () => {
   beforeEach(async () => {
     await prisma.$executeRaw`TRUNCATE TABLE users RESTART IDENTITY`;
+    await prisma.$executeRaw`TRUNCATE TABLE tests RESTART IDENTITY`;
   });
 
   it("should return status code 201 and the registered test when creating a valid test", async () => {
@@ -107,6 +108,62 @@ describe("POST /tests", () => {
 describe("GET /tests/byterms", () => {
   beforeEach(async () => {
     await prisma.$executeRaw`TRUNCATE TABLE users RESTART IDENTITY`;
+    await prisma.$executeRaw`TRUNCATE TABLE tests RESTART IDENTITY`;
+  });
+
+  it("should return status code 200 and body in array format with at least 1 test", async () => {
+    const authorization = await getFormatedAuthorization();
+    const newTest = generateValidNewTest();
+
+    await request(app).post("/tests").send(newTest);
+    const response = await request(app)
+      .get("/tests/byterms")
+      .set("Authorization", authorization);
+    const testsSize = response.body.length;
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(testsSize).toBeGreaterThan(0);
+  });
+
+  it("should return status code 401 and error message when trying to get tests without authorization headers", async () => {
+    const response = await request(app).get("/tests/byterms");
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Authorization header is required");
+  });
+
+  it("should return status code 401 and error message when trying to get tests with invalid Bearer authorization format", async () => {
+    const token = await getNewUserToken();
+
+    const response = await request(app)
+      .get("/tests/byterms")
+      .set("Authorization", token);
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Token is not in the right format");
+  });
+
+  it("should return status code 401 and error message when trying to get tests with invalid token in authorization headers", async () => {
+    const authorization = "Bearer invalid token";
+
+    const response = await request(app)
+      .get("/tests/byterms")
+      .set("Authorization", authorization);
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Token is not valid");
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+});
+
+describe("GET /tests/byteachers", () => {
+  beforeEach(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE users RESTART IDENTITY`;
+    await prisma.$executeRaw`TRUNCATE TABLE tests RESTART IDENTITY`;
   });
 
   it("should return status code 200 and body in array format with at least 1 test", async () => {
