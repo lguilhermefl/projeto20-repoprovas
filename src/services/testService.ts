@@ -20,7 +20,7 @@ export async function insert(testData: TestInsertData): Promise<Test> {
   return await testRepository.insert(testData);
 }
 
-export async function getAllByTerms() {
+export async function getAllByTerms(): Promise<any> {
   return await testRepository.findAllTestsByTerms();
 }
 

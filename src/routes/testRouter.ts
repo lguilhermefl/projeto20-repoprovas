@@ -6,12 +6,12 @@ import * as testController from "../controllers/testController";
 
 const testRouter = Router();
 
-testRouter.get("/tests", testController.getAll);
 // testRouter.use(validateJWT());
 testRouter.post(
   "/tests",
   validateBodySchemaMiddleware(testSchema),
   testController.insert
 );
+testRouter.get("/tests/byterms", testController.getAllByTerms);
 
 export default testRouter;
