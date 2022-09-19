@@ -8,28 +8,53 @@ describe("POST /signup", () => {
     await prisma.$executeRaw`TRUNCATE TABLE users RESTART IDENTITY`;
   });
 
-  it("should return status code 200", async () => {
+  it("should return status code 201 when creating valid user", async () => {
     const newUser = generateNewUser();
 
-    const result = await request(app).post("/signup").send(newUser);
+    const response = await request(app).post("/signup").send(newUser);
 
-    expect(result.status).toEqual(201);
+    expect(response.status).toEqual(201);
   });
 
-  it("should return status code 409", async () => {
+  it("should return status code 409 when email already registered", async () => {
     const newUser = generateNewUser();
 
     await request(app).post("/signup").send(newUser);
-    const result = await request(app).post("/signup").send(newUser);
+    const response = await request(app).post("/signup").send(newUser);
 
-    expect(result.status).toEqual(409);
-    expect(result.text).toEqual("This email is already in use");
+    expect(response.status).toEqual(409);
+    expect(response.text).toEqual("This email is already in use");
   });
 
-  it("should return status code 422", async () => {
-    const result = await request(app).post("/signup");
+  it("should return status code 422 when invalid body format", async () => {
+    const response = await request(app).post("/signup");
 
-    expect(result.status).toEqual(422);
+    expect(response.status).toEqual(422);
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+});
+
+describe("POST /signin", () => {
+  beforeEach(async () => {
+    await prisma.$executeRaw`TRUNCATE TABLE users RESTART IDENTITY`;
+  });
+
+  it("should return status code 200 and token when sign in is successful", async () => {
+    const newUser = generateNewUser();
+
+    const newUserResponse = await request(app).post("/signup").send(newUser);
+
+    delete newUser.repeat_password;
+
+    const userSignInResponse = await request(app).post("/signin").send(newUser);
+
+    const token = userSignInResponse.body;
+
+    expect(token).not.toBeNull();
+    expect(userSignInResponse.status).toEqual(200);
   });
 
   afterAll(async () => {
