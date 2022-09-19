@@ -21,11 +21,7 @@ export default function validateJWT() {
       };
     }
 
-    const token = authorization?.replace("Bearer ", "");
-
-    if (!token) {
-      throw { type: "Unauthorized", message: "Token is required" };
-    }
+    const token = authorization.trim().replace("Bearer ", "");
 
     const SECRET: string = process.env.TOKEN_SECRET_KEY ?? "";
 

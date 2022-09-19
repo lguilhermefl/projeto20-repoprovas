@@ -64,6 +64,32 @@ describe("POST /tests", () => {
     expect(response.text).toEqual("Authorization header is required");
   });
 
+  it("should return status code 401 and error message when trying to create test with invalid Bearer authorization format", async () => {
+    const token = await getNewUserToken();
+    const newTest = generateValidNewTest();
+
+    const response = await request(app)
+      .post("/tests")
+      .send(newTest)
+      .set("Authorization", token);
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Token is not in the right format");
+  });
+
+  it("should return status code 401 and error message when trying to create test with invalid token in authorization headers", async () => {
+    const authorization = "Bearer invalid token";
+    const newTest = generateValidNewTest();
+
+    const response = await request(app)
+      .post("/tests")
+      .send(newTest)
+      .set("Authorization", authorization);
+
+    expect(response.status).toEqual(401);
+    expect(response.text).toEqual("Token is not valid");
+  });
+
   it("should return status code 422 when invalid new test body format", async () => {
     const authorization = await getFormatedAuthorization();
     const response = await request(app)
