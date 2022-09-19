@@ -1,19 +1,19 @@
 import { Router } from "express";
 import validateBodySchemaMiddleware from "../middlewares/validateBodySchema";
-import { authSchema } from "../schemas/authSchema";
+import { signUpSchema, signInSchema } from "../schemas/authSchemas";
 import * as authController from "../controllers/authController";
 
 const authRouter = Router();
 
 authRouter.post(
   "/signup",
-  validateBodySchemaMiddleware(authSchema),
+  validateBodySchemaMiddleware(signUpSchema),
   authController.signUp
 );
 
 authRouter.post(
   "/signin",
-  validateBodySchemaMiddleware(authSchema),
+  validateBodySchemaMiddleware(signInSchema),
   authController.signIn
 );
 
